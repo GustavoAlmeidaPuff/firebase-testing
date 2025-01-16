@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {initializeApp} from 'firebase/app'
-import {getFirestore, getDocs, collection} from 'firebase/firestore'
+import {getFirestore, getDocs, collection, addDoc} from 'firebase/firestore'
 
 const firebaseApp = initializeApp({
   apiKey: "AIzaSyAkD-9XrevsAim-XZATDpq-OsMDclsq6as",
@@ -30,6 +30,16 @@ export const App = () => {
     getUsers();
   }, [userCollectionRef]);
 
+  const criarUser = async () => {
+    try {
+      await addDoc(userCollectionRef, { name, email });
+      setName('');
+      setEmail('');
+    } catch (error) {
+      console.error("Erro ao criar usuário: ", error);
+    }
+  };
+
   return (
     <div>
       <input 
@@ -43,8 +53,7 @@ export const App = () => {
         value={email} 
         onChange={(e) => setEmail(e.target.value)} />
 
-
-      <button>create user</button>
+      <button onClick={criarUser}>create user</button>
       <ul>
         {
           users.map((user) => {
