@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {initializeApp} from 'firebase/app'
 import {getFirestore, getDocs, collection, addDoc, doc, deleteDoc, updateDoc} from 'firebase/firestore'
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth'
 
 const firebaseApp = initializeApp({
   apiKey: "AIzaSyAkD-9XrevsAim-XZATDpq-OsMDclsq6as",
@@ -12,6 +13,9 @@ const firebaseApp = initializeApp({
   measurementId: "G-84XXD6BVVE"
 });
 
+const auth = getAuth(firebaseApp);
+const provider = new GoogleAuthProvider();
+
 export const App = () => {
 
   const [name, setName] = useState('');
@@ -20,6 +24,7 @@ export const App = () => {
   const [editUserId, setEditUserId] = useState(null);
   const [editName, setEditName] = useState('');
   const [editEmail, setEditEmail] = useState('');
+  const [user, setUser] = useState(null);
 
   const db = getFirestore(firebaseApp);
   const userCollectionRef = collection(db, 'users');
@@ -62,8 +67,35 @@ export const App = () => {
     setEditEmail('');
   };
 
+  const loginWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      setUser(result.user);
+    } catch (error) {
+      console.error("Erro ao fazer login com Google: ", error);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      setUser(null);
+    } catch (error) {
+      console.error("Erro ao sair: ", error);
+    }
+  };
+
   return (
     <div>
+      {user ? (
+        <div>
+          <p>Bem-vindo, {user.displayName}</p>
+          <button onClick={logout}>Sair</button>
+        </div>
+      ) : (
+        <button onClick={loginWithGoogle}>Login com Google</button>
+      )}
+
       <input 
         type="text"   
         placeholder='nome...' 
