@@ -32,6 +32,19 @@ export const App = () => {
 
   return (
     <div>
+      <input 
+        type="text"   
+        placeholder='nome...' 
+        value={name} 
+        onChange={(e) => setName(e.target.value)} />
+      <input 
+        type="text" 
+        placeholder='email...'
+        value={email} 
+        onChange={(e) => setEmail(e.target.value)} />
+
+
+      <button>create user</button>
       <ul>
         {
           users.map((user) => {
